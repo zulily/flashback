@@ -1,0 +1,561 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>flashback &mdash; flashback 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="flashback 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="License" href="license.html"/>
+        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> flashback
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">flashback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-usage">Example Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#archive-etc-rsyslog-conf">Archive /etc/rsyslog.conf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#diff-two-versions">Diff Two Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recover">Recover</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report">Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#purge">Purge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#important-considerations">Important Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-reference">Command-line Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">flashback</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>flashback</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/flashback.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="flashback">
+<h1>flashback<a class="headerlink" href="#flashback" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>flashback</strong>, is a simple command-line utility that offers fast system and configuration file
+recovery on remote hosts.</p>
+<p>It is a tool that is generally used for archiving smallish files just prior to the roll-out
+of configuration changes, and only one version of the file or files may be archived per day.
+If subsequent archive commands are run in the same day, only the latest version persists.</p>
+</div>
+<div class="section" id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="archive-etc-rsyslog-conf">
+<h3>Archive /etc/rsyslog.conf<a class="headerlink" href="#archive-etc-rsyslog-conf" title="Permalink to this headline">¶</a></h3>
+<p><em>Let&#8217;s say we are about to roll out significant changes to
+/etc/rsyslog.conf through some other mechanism (e.g. chef or SaltStack), and we
+are very concerned about the prospect of something going wrong and losing
+several minutes of log data.  Let&#8217;s perform a backup which will allow us to recover
+near instantly, in the event something goes wrong, such as a syntax error
+that was not caught.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>flashback archive -H localhost -F /etc/rsyslog.conf
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">-H may be specified multiple times, but more commonly, consider using
+-f hosts.txt, where hosts.txt is a file containing a list of hosts
+to act upon, one hostname per line.</p>
+</div>
+</div>
+<div class="section" id="diff-two-versions">
+<h3>Diff Two Versions<a class="headerlink" href="#diff-two-versions" title="Permalink to this headline">¶</a></h3>
+<p><em>Diff the current and archived version (from earlier in the same day, assuming
+it exists) of /etc/rsyslog.conf</em></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>flashback diff -F /etc/rsyslog.conf -H localhost
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any two versions (there is a max of one archive per file, per day) may be compared.
+Please use the &#8211;date-first and &#8211;date-second arguments.</p>
+</div>
+</div>
+<div class="section" id="recover">
+<h3>Recover<a class="headerlink" href="#recover" title="Permalink to this headline">¶</a></h3>
+<p><em>Continuing with the /etc/rsylog.conf example, let&#8217;s say something did go wrong, and
+we need to recover the latest version (archived today) immediately.  We can recover
+the file and perform an rsyslog restart.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>flashback recover -H localhost -F /etc/rsyslog.conf <span class="se">\</span>
+  --post-recover-command<span class="o">=</span><span class="s2">&quot;sudo service rsyslog restart&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="report">
+<h3>Report<a class="headerlink" href="#report" title="Permalink to this headline">¶</a></h3>
+<p><em>It may be necessary to get a precise idea of exactly what has been archived on a
+server, or across several servers.  The report subcommand provides a hierarchical
+listing, broken down by date.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>flashback report -H localhost -f /etc/rsyslog.conf
+</pre></div>
+</div>
+</div>
+<div class="section" id="purge">
+<h3>Purge<a class="headerlink" href="#purge" title="Permalink to this headline">¶</a></h3>
+<p><em>It may be desirable to delete all archived files, which may be accomplished by
+using the purge subcommand.</em></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>flashback report -H localhost
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="important-considerations">
+<h2>Important Considerations<a class="headerlink" href="#important-considerations" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Only one archive of any file may exist per day, re-running the archive subcommand will
+overwrite any previous archives from earlier in the day</li>
+<li>Backed up file names must be unique, or a collision may occur.  For example, archiving
+both /etc/rsylog.conf and /usr/local/etc/rsyslog.conf will result in the last file
+to be archived overwriting the first one.</li>
+<li>If not using the default archive directory (/root/.flashback), precautions should be
+taken to ensure sensitive file archives are properly protected.</li>
+</ul>
+</div>
+<div class="section" id="command-line-reference">
+<h2>Command-line Reference<a class="headerlink" href="#command-line-reference" title="Permalink to this headline">¶</a></h2>
+<p>Roll-back changes in a flash. Perform archiving, recovery and reporting for <em>small</em> system and configuration files.  Can be a bit slow to execute if used in a way that opens up large numbers of concurrent ssh connections</p>
+<pre class="literal-block">
+usage: flashback [-h] {archive,diff,purge,recover,report} ...
+</pre>
+<dl class="docutils">
+<dt>Sub-commands:</dt>
+<dd><dl class="first last docutils">
+<dt><strong>archive</strong></dt>
+<dd><p class="first">Archive system files</p>
+<pre class="literal-block">
+usage: flashback archive [-h] [--verbose]
+                         (--host hostname | --hosts-file FILE)
+                         [--system-file FULLPATH] [--archive-directory N]
+                         [--parallel-workers N] [--sudo-password-prompt]
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Turn on verbose fabric output.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--host</span>, <span class="option">-H</span></kbd></td>
+<td>Hostname for host where we wish to archive files or perform reporting</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hosts-file</span>, <span class="option">-f</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Text file containing a list of hosts, one per line. Ignored if &#8211;host is specified</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--system-file</span>, <span class="option">-F</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Full path for system files to perform operations on. Does not apply when used with the purge subcommand (purge removes the entire directory).  Defaults to /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--archive-directory=/root/.flashback</span>, <span class="option">-D=/root/.flashback</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The directory where archived system and configuration files reside. Defaults to /root/.flashback</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--parallel-workers=10</span>, <span class="option">-w=10</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Number of concurrent connections, set to 1 to serialize.  Defaults to 10</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sudo-password-prompt=False</span>, <span class="option">-p=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Prompt for a password if required for sudo command execution. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>diff</strong></dt>
+<dd><p class="first">Diff files for two dates, the current and most recent archives are used by default</p>
+<pre class="literal-block">
+usage: flashback diff [-h] [--verbose] (--host hostname | --hosts-file FILE)
+                      [--system-file FULLPATH] [--archive-directory N]
+                      [--parallel-workers N] [--sudo-password-prompt]
+                      [--date-first YYYYMMDD] [--date-second YYYYMMDD]
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Turn on verbose fabric output.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--host</span>, <span class="option">-H</span></kbd></td>
+<td>Hostname for host where we wish to archive files or perform reporting</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hosts-file</span>, <span class="option">-f</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Text file containing a list of hosts, one per line. Ignored if &#8211;host is specified</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--system-file</span>, <span class="option">-F</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Full path for system files to perform operations on. Does not apply when used with the purge subcommand (purge removes the entire directory).  Defaults to /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--archive-directory=/root/.flashback</span>, <span class="option">-D=/root/.flashback</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The directory where archived system and configuration files reside. Defaults to /root/.flashback</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--parallel-workers=10</span>, <span class="option">-w=10</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Number of concurrent connections, set to 1 to serialize.  Defaults to 10</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sudo-password-prompt=False</span>, <span class="option">-p=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Prompt for a password if required for sudo command execution. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--date-first=0</span>, <span class="option">-a=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Date to perform comparison, defaults &#8216; +                              &#8216;to today&#8217;s date, such as earlier today</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--date-second=1</span>, <span class="option">-b=1</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Date to perform comparison, defaults to the live copy if unspecified</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>purge</strong></dt>
+<dd><p class="first">Purge all archived files</p>
+<pre class="literal-block">
+usage: flashback purge [-h] [--verbose] (--host hostname | --hosts-file FILE)
+                       [--system-file FULLPATH] [--archive-directory N]
+                       [--parallel-workers N] [--sudo-password-prompt]
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Turn on verbose fabric output.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--host</span>, <span class="option">-H</span></kbd></td>
+<td>Hostname for host where we wish to archive files or perform reporting</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hosts-file</span>, <span class="option">-f</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Text file containing a list of hosts, one per line. Ignored if &#8211;host is specified</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--system-file</span>, <span class="option">-F</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Full path for system files to perform operations on. Does not apply when used with the purge subcommand (purge removes the entire directory).  Defaults to /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--archive-directory=/root/.flashback</span>, <span class="option">-D=/root/.flashback</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The directory where archived system and configuration files reside. Defaults to /root/.flashback</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--parallel-workers=10</span>, <span class="option">-w=10</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Number of concurrent connections, set to 1 to serialize.  Defaults to 10</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sudo-password-prompt=False</span>, <span class="option">-p=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Prompt for a password if required for sudo command execution. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>recover</strong></dt>
+<dd><p class="first">Recover an archived copy for the specified file(s). Defaults to today if a YYYYMMDD date is not specified.</p>
+<pre class="literal-block">
+usage: flashback recover [-h] [--verbose]
+                         (--host hostname | --hosts-file FILE)
+                         [--system-file FULLPATH] [--archive-directory N]
+                         [--parallel-workers N] [--sudo-password-prompt]
+                         [--recover-date YYYYMMDD]
+                         [--post-recover-command COMMAND] [--dry-run]
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Turn on verbose fabric output.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--host</span>, <span class="option">-H</span></kbd></td>
+<td>Hostname for host where we wish to archive files or perform reporting</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hosts-file</span>, <span class="option">-f</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Text file containing a list of hosts, one per line. Ignored if &#8211;host is specified</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--system-file</span>, <span class="option">-F</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Full path for system files to perform operations on. Does not apply when used with the purge subcommand (purge removes the entire directory).  Defaults to /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--archive-directory=/root/.flashback</span>, <span class="option">-D=/root/.flashback</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The directory where archived system and configuration files reside. Defaults to /root/.flashback</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--parallel-workers=10</span>, <span class="option">-w=10</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Number of concurrent connections, set to 1 to serialize.  Defaults to 10</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sudo-password-prompt=False</span>, <span class="option">-p=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Prompt for a password if required for sudo command execution. </td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--recover-date=0</span>, <span class="option">-r=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Date to recover from if the file exists, defaults to today&#8217;s date, such as earlier today</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--post-recover-command</span>, <span class="option">-c</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>A quoted command to execute with sudo after file recovery, such as &#8220;service nginx restart&#8221;</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--dry-run=False</span>, <span class="option">-n=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Don&#8217;t actually recover files</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+<dt><strong>report</strong></dt>
+<dd><p class="first">Summarized reporting of archived system files</p>
+<pre class="literal-block">
+usage: flashback report [-h] [--verbose] (--host hostname | --hosts-file FILE)
+                        [--system-file FULLPATH] [--archive-directory N]
+                        [--parallel-workers N] [--sudo-password-prompt]
+</pre>
+<dl class="last docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--verbose=False</span>, <span class="option">-v=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Turn on verbose fabric output.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--host</span>, <span class="option">-H</span></kbd></td>
+<td>Hostname for host where we wish to archive files or perform reporting</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hosts-file</span>, <span class="option">-f</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Text file containing a list of hosts, one per line. Ignored if &#8211;host is specified</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--system-file</span>, <span class="option">-F</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Full path for system files to perform operations on. Does not apply when used with the purge subcommand (purge removes the entire directory).  Defaults to /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--archive-directory=/root/.flashback</span>, <span class="option">-D=/root/.flashback</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The directory where archived system and configuration files reside. Defaults to /root/.flashback</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--parallel-workers=10</span>, <span class="option">-w=10</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Number of concurrent connections, set to 1 to serialize.  Defaults to 10</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--sudo-password-prompt=False</span>, <span class="option">-p=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Prompt for a password if required for sudo command execution. </td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, zulily.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
