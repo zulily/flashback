@@ -1,0 +1,12 @@
+Archived Files Report
+
+{% for host in data %}{{ host }}
+  {% if data[host]|length > 0 %}
+    {% for date in data[host]|sort %}{{ date }}
+        {% for file in data[host][date]|sort %}{{ file }}
+        {% endfor %}
+    {% endfor -%}
+  {%- else %}
+    No results found.
+  {%- endif -%}
+{%- endfor -%}
