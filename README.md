@@ -37,13 +37,13 @@ Example CLI Usage
 **Create a backup of /etc/rsyslog.conf for all hosts listed in hosts.txt**
 
 ```bash
-flashback archive -f hosts.txt -F /etc/rsyslog.conf
+flashback archive -f hosts.txt -F /etc/rsyslog.conf --parallel-workers=5
 ```
 
 **Recover the archived version of /etc/rsyslog.conf from earlier in the day and perform a service restart**
 
 ```bash
-flashback -f hosts.txt -F /etc/rsyslog.conf \
+flashback -f hosts.txt -F /etc/rsyslog.conf --parallel-workers=5 \
 --post-recover-command="sudo service rsyslog restart"
 ```
 
