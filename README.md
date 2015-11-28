@@ -34,13 +34,18 @@ Installation
 
 Example CLI Usage
 -----------------
-**Create backups of /etc/passwd and /etc/group files for all hosts listed in hosts.txt**
+**Create a backup of /etc/rsyslog.conf for all hosts listed in hosts.txt**
 
 ```bash
-flashback archive -f hosts.txt
+flashback archive -f hosts.txt -F /etc/rsyslog.conf
 ```
-**Recover xxxxxxx**
 
+**Recover the archived version of /etc/rsyslog.conf from earlier in the day and perform a service restart**
+
+```bash
+flashback -f hosts.txt -F /etc/rsyslog.conf \
+--post-recover-command="sudo service rsyslog restart"
+```
 
 License
 -------
